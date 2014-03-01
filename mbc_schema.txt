@@ -1,0 +1,87 @@
+# MySQL dump 8.14
+#
+# Host: localhost    Database: mbc
+#--------------------------------------------------------
+# Server version	3.23.40-log
+
+#
+# Table structure for table 'class'
+#
+
+CREATE TABLE class (
+  id int(11) NOT NULL auto_increment,
+  section int(11) default NULL,
+  capacity int(11) default NULL,
+  teacher char(40) default NULL,
+  name char(40) default NULL,
+  room char(20) default NULL,
+  period int(11) default NULL,
+  length int(11) default NULL,
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+#
+# Table structure for table 'register'
+#
+
+CREATE TABLE register (
+  id int(11) NOT NULL auto_increment,
+  class1_id int(11) default NULL,
+  class2_id int(11) default NULL,
+  class3_id int(11) default NULL,
+  year int(11) default NULL,
+  student_id int(11) default NULL,
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+#
+# Table structure for table 'student'
+#
+
+CREATE TABLE student (
+  id int(11) NOT NULL auto_increment,
+  f_name char(20) default NULL,
+  l_name char(30) default NULL,
+  troop int(11) default NULL,
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+#
+# Table structure for table 'teacher'
+#
+
+CREATE TABLE teacher (
+  id int(11) NOT NULL default '0',
+  f_name char(20) default NULL,
+  l_name char(30) default NULL,
+  phone char(14) default NULL,
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+#
+# Table structure for table 'troop'
+#
+
+CREATE TABLE troop (
+  c_name char(40) default NULL,
+  troop int(11) NOT NULL default '0',
+  c_addr1 char(30) default NULL,
+  c_addr2 char(30) default NULL,
+  c_zip char(10) default NULL,
+  c_city char(20) default NULL,
+  c_state char(16) default NULL,
+  c_phone char(14) default NULL,
+  c_email char(40) default NULL,
+  password char(40) default NULL,
+  PRIMARY KEY  (troop)
+) TYPE=MyISAM;
+
+#
+# Table structure for table 'year'
+#
+
+CREATE TABLE year (
+  year int(11) NOT NULL default '0',
+  chair char(40) default NULL,
+  PRIMARY KEY  (year)
+) TYPE=MyISAM;

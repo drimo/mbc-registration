@@ -1,0 +1,11 @@
+-- Author: Matthew Hancock
+-- Purpose: Adds a column for storing registration status for the year
+-- Host: localhost
+-- Generation Time: Nov 02, 2005 at 10:42 PM
+-- Server version: 4.1.14
+-- PHP Version: 5.0.4
+-- 
+-- Database: `mbc`
+-- 
+
+ALTER TABLE year ADD register_status char(1) NOT NULL default 'O';

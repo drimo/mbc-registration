@@ -1,0 +1,9 @@
+BODY{font-family:arial;margin:0}
+TD.Header{COLOR: #FFFFFF;FONT-SIZE: 16pt;}
+TABLE.Header{BACKGROUND-COLOR: #183265;TEXT-ALIGN: center;}
+TABLE.S_MENU{TEXT-ALIGN: center;}
+TABLE.S_MENU_BODY{background: #e5e5e5;}
+TABLE.S_MENU_HEAD{background: lightgrey;font-weight: bold;}
+A:visited{COLOR: navy;TEXT-DECORATION: none}
+A:active{COLOR: navy;TEXT-DECORATION: none}
+A:link{COLOR: navy;TEXT-DECORATION: none}
