@@ -2,7 +2,16 @@
 //export.php
 // created 11-22-04 by Matthew Hancock
 // *provides functions to select and export data to excel spreadsheet
+
 require_once("mysql.php");
+
+if(isset($_GET['export'])) {
+	$export = $_GET['export'];
+}
+if(isset($_GET['option'])) {
+	$option = $_GET['option'];
+}
+
 if(isset($export))
 {
 	switch($option)

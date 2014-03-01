@@ -4,6 +4,8 @@ include("mysql.php");
 
 //authenticate using form in homepage.php
 //$status = authenticate($_POST['troop'],$_POST['password']);
+$troop = $_POST['troop'];
+$password = $_POST['password'];
 $status = authenticate($troop,$password);
 
 if($status == 1)
@@ -12,7 +14,6 @@ if($status == 1)
         session_start();
 
         //register some session session vars
-        session_register("SESSION");
 	$_SESSION['troop'] = $troop;
 
 	if($troop == 0){

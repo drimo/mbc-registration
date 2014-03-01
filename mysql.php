@@ -3,20 +3,21 @@
 //set up variables, regardless if we need them or not
 
 require("utility.php");
+require("config.php");
 
 //contact information variables
-$contact = array(c_name => $c_name,troop =>$troop,c_addr1 => $c_addr1,c_addr2 => $c_addr2,c_zip=>$c_zip,c_state=>$c_state,c_city=>$c_city,c_phone => $c_phone,c_email => $c_email, password => $password);
+//$contact = array('c_name' => $c_name, 'troop' => $troop, 'c_addr1' => $c_addr1, 'c_addr2' => $c_addr2, 'c_zip' => $c_zip, 'c_state' => $c_state, 'c_city' => $c_city, 'c_phone' => $c_phone, 'c_email' => $c_email, 'password' => $password);
 //student variables
-$student = array(id => $id,f_name =>$f_name,l_name => $l_name);
+//$student = array('id' => $id, 'f_name' => $f_name, 'l_name' => $l_name);
 //teacher variables
-$teacher = array(id => $id,f_name =>$f_name,l_name => $l_name,phone => $phone);
+//$teacher = array('id' => $id, 'f_name' => $f_name, 'l_name' => $l_name, 'phone' => $phone);
 //login
-$login = array(troop => $troop,password => $password);
+//$login = array('troop' => $troop, 'password' => $password);
 
 
 //connect to the server
-mysql_connect('localhost','epsilont_mbc','badg3$');
-mysql_select_db('epsilont_mbc');
+mysql_connect('localhost',$dbUser,$dbPassword);
+mysql_select_db($dbDatabaseName);
 
 //m.hancock - 2009-03-21 - Use of the MBC registration scripts requires PHP register_globals to be set to ON.
 
@@ -32,9 +33,9 @@ function add_contact($info)
 }
 
 
-function update_contact($info)
+function update_contact()
 {
-	$query = "update troop set c_name='$info[c_name]',c_addr1='$info[c_addr1]',c_addr2='$info[c_addr2]',c_zip='$info[c_zip]',c_city='$info[c_city]',c_state='$info[c_state]',c_phone='$info[c_phone]',c_email='$info[c_email]',password='$info[password]' where troop ='$info[troop]'";
+	$query = "update troop set c_name='$_POST[c_name]',c_addr1='$_POST[c_addr1]',c_addr2='$_POST[c_addr2]',c_zip='$_POST[c_zip]',c_city='$_POST[c_city]',c_state='$_POST[c_state]',c_phone='$_POST[c_phone]',c_email='$_POST[c_email]',password='$_POST[password]' where troop ='$_POST[troop]'";
 
 	return mysql_query($query) or die($query);
 }
@@ -72,12 +73,12 @@ function addSession($year,$chair){
 }
 
 
-function getClassInfo($id,&$info)
+function getClassInfo($id)
 {
 	$query = "select * from class where id='$id'";
 	$result = mysql_query($query);
 	$info = mysql_fetch_array($result);
-	return;
+	return $info;
 }
 
 
@@ -88,15 +89,15 @@ function getClassName($classID){
 
 	$info = mysql_fetch_array($result);
 
-	return $info[name];
+	return $info['name'];
 }
 
 
-function getContactInfo($troop,&$info){
+function getContactInfo($troop){
 	$query = "select * from troop where troop='$troop'";
 	$result = mysql_query($query);
 	$info = mysql_fetch_array($result);
-	return;
+	return $info;
 }
 
 function getSessionYear(){
@@ -105,7 +106,7 @@ function getSessionYear(){
 
 	$year = -1;
 	while($array = mysql_fetch_array($result)){
-		if($array[year] > $year) $year = $array[year];
+		if($array['year'] > $year) $year = $array['year'];
 	}
 
 	return $year;
@@ -157,7 +158,7 @@ function deleteScout($id)
 }
 
 
-function getClassList(&$list)
+function getClassList()
 {
 	$query = "select * from class order by name";
 	$result = mysql_query($query);
@@ -172,6 +173,8 @@ function getClassList(&$list)
 		$list[$i][room]		= $array[room];
 		$i++;
 	}
+	
+	return $list;
 }
 
 
@@ -203,7 +206,7 @@ function getNumScouts($troop)
 }
 
 
-function getTroopList(&$info)
+function getTroopList()
 {
 	$query = "select * from troop order by troop";
 	$result = mysql_query($query);
@@ -211,11 +214,13 @@ function getTroopList(&$info)
 	$i = 0;
 
 	while($array = mysql_fetch_array($result)){
-		$info[$i][troop] 	= $array[troop];
-		$info[$i][c_name]	= $array[c_name];
-		$info[$i][c_email]	= $array[c_email];
+		$info[$i]['troop'] 	= $array['troop'];
+		$info[$i]['c_name']	= $array['c_name'];
+		$info[$i]['c_email']	= $array['c_email'];
 		$i++;
 	}
+	
+	return $info;
 }
 
 
@@ -228,24 +233,26 @@ function getNumScoutsReg($troop,$year)
 }
 
 
-function getTroopInfo($year,&$info)
+function getTroopInfo($year)
 {
-	getTroopList(&$troops);
+	$troops = getTroopList();
 	for($i=0;$i<sizeof($troops);$i++)
 	{
-		$troop = $troops[$i][troop];
+		$troop = $troops[$i]['troop'];
 		$query = "select * from register,student where student.troop = '$troop' && register.year = '$year' && student.id = register.student_id";
 		$result = mysql_query($query) or die($query);
-		$info[$i][troop] 	= $troop;
-		$info[$i][cur_session] 	= mysql_num_rows($result);
-		$info[$i][c_name] 	= $troops[$i][c_name];
-		$info[$i][c_email]	= $troops[$i][c_email];
+		$info[$i]['troop'] 	= $troop;
+		$info[$i]['cur_session'] 	= mysql_num_rows($result);
+		$info[$i]['c_name'] 	= $troops[$i]['c_name'];
+		$info[$i]['c_email']	= $troops[$i]['c_email'];
 
 
 		$query = "select * from student where troop = '$troop'";
 		$result = mysql_query($query) or die($query);
-		$info[$i][num_scouts]	= mysql_num_rows($result);
+		$info[$i]['num_scouts']	= mysql_num_rows($result);
 	}
+	
+	return($info);
 }
 
 function classIsFull($id,$year,$capacity){
@@ -380,7 +387,7 @@ function isRegistrationOpen()
 	$query = "select register_status from year where year = '$year'";
 	$result = mysql_query($query);
 	$info = mysql_fetch_array($result);
-	if($info[register_status] == "O")
+	if($info['register_status'] == "O")
 	        return true;
 	else
 	        return false;

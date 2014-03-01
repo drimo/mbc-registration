@@ -42,18 +42,18 @@ function drawAddScout(){
 	<input type='submit' value='add'></form>";
 	//m.hancock - 11/10/2007 - Added combo for t-shirt selection (child's small to adult XL)
 	// n.fahrig - 11/10/2010 - T-shirts are currently not being offered at MBC any more, commented out below section
-	#$data[1] = "$data[1] 
-	#T-Shirt <select name='tshirt'>
-	#	<option value = 'None' selected>None</option>
-	#	<option value = 'Child Small'>Child Small</option>
-	#	<option value = 'Child Medium'>Child Medium</option>
-	#	<option value = 'Child Large'>Child Large</option>
-	#	<option value = 'Adult Small'>Adult Small</option>
-	#	<option value = 'Adult Medium'>Adult Medium</option>
-	#	<option value = 'Adult Large'>Adult Large</option>
-	#	<option value = 'Adult X-Large'>Adult X-Large</option>
-	#	</select>
-	#</br>
+	//$data[1] = "$data[1] 
+	//T-Shirt <select name='tshirt'>
+	//	<option value = 'None' selected>None</option>
+	//	<option value = 'Child Small'>Child Small</option>
+	//	<option value = 'Child Medium'>Child Medium</option>
+	//	<option value = 'Child Large'>Child Large</option>
+	//	<option value = 'Adult Small'>Adult Small</option>
+	//	<option value = 'Adult Medium'>Adult Medium</option>
+	//	<option value = 'Adult Large'>Adult Large</option>
+	//	<option value = 'Adult X-Large'>Adult X-Large</option>
+	//	</select>
+	//</br>
 	
 
 	drawBox($data);
@@ -78,7 +78,7 @@ function drawAddClass(){
 
 
 function drawEditClass($id){
-	getClassInfo($id,$info);
+	$info = getClassInfo($id);
 
 	$data[0] = "Edit Class";
 	$data[1] = "<form method='POST' action='system.php'>
@@ -89,7 +89,7 @@ function drawEditClass($id){
 	<input type='hidden' name='length' value='$info[length]'>
 	Name <input type='text' name='name' value='$info[name]'></br>
 	Section <input type='text' name='section' size='1' value='$info[section]'></br>
-	Capacity <input type='text' name='capacity' size='3' value=$info[capacity]></br>
+	Capacity <input type='text' name='capacity' size='3' value='$info[capacity]'></br>
 	Teacher <input type='text' name='teach' value='$info[teacher]'></br>
 	Room <input type='text' name='room' value='$info[room]'></br>
 	<input type='submit' value='update'></form>";
@@ -174,7 +174,7 @@ function drawListClasses()
 	$data[1] = "$data[1] <tr><td>Class Name</td><td>Section</td><td>Capacity</td><td>Current</td><td>Teacher</td><td>Room</td><td>Period</td><td>Length</td</tr>";
 
 	while($classes=mysql_fetch_array($result)){
-		$reged = getClassRegNum($_SESSION['year'],$classes[id]);
+		$reged = getClassRegNum($_SESSION['year'], $classes['id']);
 		$data[1] = "$data[1] <tr>\n<td>$classes[name]</td><td> $classes[section]</td><td> $classes[capacity]</td><td>$reged</td><td> $classes[teacher]</td><td>$classes[room]</td><td>$classes[period]</td><td>$classes[length]</td><td><a href='system.php?option=7&id=$classes[id]&action=12'>Edit</a></td><td><a href='system.php?option=7&id=$classes[id]&action=4'>Delete</a></td>\n</tr>\n";
 	}
 	$data[1] = "$data[1] </table>\n";
@@ -198,9 +198,9 @@ function drawListRegistered($year,$troop)
 	$data[1] = "$data[1] <tr><td>Last Name</td><td>First Name</td><td>Class 1</td><td>Class 2</td><td>Class 3</td></tr>";
 
 	while($info=mysql_fetch_array($result)){
-		$c1 = getClassName($info[class1_id]);
-		$c2 = getClassName($info[class2_id]);
-		$c3 = getClassName($info[class3_id]);
+		$c1 = getClassName($info['class1_id']);
+		$c2 = getClassName($info['class2_id']);
+		$c3 = getClassName($info['class3_id']);
 
 		$data[1] = "$data[1] <tr>\n<td>$info[l_name]</td><td>$info[f_name]</td><td> $c1</td><td> $c2</td><td>$c3</td>
 	<td><a href='system.php?option=3&id=$info[student_id]&action=7'>Remove</a></td>
@@ -314,7 +314,7 @@ function drawTroopRoster($troop)
 
 function drawTroopList($year){
 	$data[0] = "Troop List";
-	getTroopInfo($year,&$info);
+	$info = getTroopInfo($year);
 
 	$t_num_roster = 0;
 	$t_num_reg = 0;
@@ -325,12 +325,12 @@ function drawTroopList($year){
 <tr><td>Troop Number</td><td>Contact Person</td><td>Email</td><td># Scouts on Roster</td><td># Scouts Registered</td></tr>";
 
 	for($i=0;$i<sizeof($info);$i++){
-		$troop 		= $info[$i][troop];
-		$c_name 	= $info[$i][c_name];
-		$email		= $info[$i][c_email];
-		$num_scouts	= $info[$i][num_scouts];
+		$troop 		= $info[$i]['troop'];
+		$c_name 	= $info[$i]['c_name'];
+		$email		= $info[$i]['c_email'];
+		$num_scouts	= $info[$i]['num_scouts'];
 		$t_num_roster+=$num_scouts;
-		$cur_session	= $info[$i][cur_session];
+		$cur_session	= $info[$i]['cur_session'];
 		$t_num_reg+=$cur_session;
 		$data[1] = "$data[1] <tr><td>$troop</td><td>$c_name</td><td>$email</td><td>$num_scouts</td><td>$cur_session</td></tr>";
 	}
@@ -346,19 +346,15 @@ function drawTroopList($year){
 
 function drawRegisterScout()
 {
-	$query = "select * from student,register where student.id='$id' && student.id=register.student_id";
-	$result = mysql_query($query);
-	$info = mysql_fetch_array($result);
-	$s1 = makeClassOption(1,$info[class1_id]);
-	$s2 = makeClassOption(2,$info[class2_id]);
-	$s3 = makeClassOption(3,$info[class3_id]);
+	$s1 = makeClassOption(1,0);
+	$s2 = makeClassOption(2,0);
+	$s3 = makeClassOption(3,0);
 	$scouts = makeScoutOption($_SESSION['troop'],$_SESSION['year']);
 
 	$data[0] = "Register Scouts";
 	$data[1] = "<form method='POST' action='system.php'>
 	<input type='hidden' name='option' value='3'>
 	<input type='hidden' name='action' value='10'>
-	<input type='hidden' name='id' value='$id'>
 	<select name='id' size='1'>$scouts</select>
 	<table border=0>
 	<tr>
@@ -394,11 +390,11 @@ function drawUpdateScoutReg($id,$year)
 	$query = "select * from student,register where student.id='$id' && student.id=register.student_id";
 	$result = mysql_query($query);
 	$info = mysql_fetch_array($result);
-	$s1 = makeClassOption(1,$info[class1_id]);
-	$s2 = makeClassOption(2,$info[class2_id]);
-	$s3 = makeClassOption(3,$info[class3_id]);
+	$s1 = makeClassOption(1,$info['class1_id']);
+	$s2 = makeClassOption(2,$info['class2_id']);
+	$s3 = makeClassOption(3,$info['class3_id']);
 
-	$data[0] = "Update Scout:$info[l_name], $info[f_name]";
+	$data[0] = "Update Scout: " . $info['l_name'] . ", " . $info['f_name'];
 	$data[1] = "<form method='POST' action='system.php'>
 	<input type='hidden' name='option' value='3'>
 	<input type='hidden' name='action' value='9'>
@@ -581,10 +577,11 @@ function drawRegForm($info)
 }
 
 
-function drawRegEditForm($info)
+function drawRegEditForm($info, $troop)
 //Initial troop registration form
 {
-	$currentYear = $time[year];
+	$time = getdate();
+	$currentYear = $time['year'];
 	$data[0] = "Update Contact Information";
 	$data[1] = "
 	<center>
@@ -649,8 +646,8 @@ function makeClassOption($period,$current){
 	$data = "<option value=-1>None\n";
 
 	while($info=mysql_fetch_array($result)){
-		if(!classIsFull($info[id],$_SESSION['year'],$info[capacity])){
-			if($current == $info[id])
+		if(!classIsFull($info['id'],$_SESSION['year'],$info['capacity'])){
+			if($current == $info['id'])
 			{
 				$data="$data <option value='$info[id]' selected>$info[name]\n";
 			}
@@ -661,7 +658,7 @@ function makeClassOption($period,$current){
 		}
 		else
 		{
-			if($current == $info[id])
+			if($current == $info['id'])
 			{
 				$data="$data <option value='$info[id]' selected>$info[name]\n";
 			}
@@ -675,8 +672,9 @@ function makeScoutOption($troop,$year){
 	$query = "select * from student where troop='$troop' order by l_name";
 	$result = mysql_query($query);
 
+	$data = '';
 	while($info=mysql_fetch_array($result)){
-		if(!scoutIsRegistered($info[id],$year))
+		if(!scoutIsRegistered($info['id'],$year))
 		{
 			$data="$data <option value='$info[id]'>$info[l_name], $info[f_name]\n";
 		}
@@ -713,7 +711,7 @@ function drawExportSpecificClass()
 	$data[1] = "$data[1] <tr><td>Class Name</td><td>Section</td><td>Period</td><td>Capacity</td><td>Current</td><td>Teacher</td><td>Room</td><td>Length</td></tr>";
 
 	while($classes=mysql_fetch_array($result)){
-		$reged = getClassRegNum($_SESSION['year'],$classes[id]);
+		$reged = getClassRegNum($_SESSION['year'],$classes['id']);
 		$data[1] = "$data[1] <tr>\n<td>$classes[name]</td><td> $classes[section]</td><td>$classes[period]</td><td> $classes[capacity]</td><td>$reged</td><td> $classes[teacher]</td><td>$classes[room]</td><td>$classes[length]</td><td><a href='export.php?export=1&option=2&id=$classes[id]'>Export</a></td>\n</tr>\n";
 	}
 	$data[1] = "$data[1] </table>\n";

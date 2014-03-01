@@ -5,7 +5,7 @@
 //	*added export to excel spreadsheet menu
 
 session_start();
-if(!session_is_registered("SESSION"))
+if(session_status() !== PHP_SESSION_ACTIVE)
 {
 	//if session check fails, invoke error handler
 	header("Location: error.php?e=2");
@@ -17,61 +17,70 @@ require_once("mysql.php");
 
 
 //actions that must occur first
-switch($action){
-	case 1://change troop
-		if(isset($_SESSION['admin'])){
-			$_SESSION['troop'] = $newtroop;
+if(isset($_GET['action'])) {
+	$action = $_GET['action'];
+}
+else {
+	if(isset($_POST['action'])) {
+		$action = $_POST['action'];
+	}
+}
 
-		}
-		break;
-	case 2: //add class
-		if(isset($_SESSION['admin'])){
-			addClass($name,$section,$capacity,$teach,$room,$period,$length);
-		}
-		break;
-	case 3: //add session
-		if(isset($_SESSION['admin'])){
-			addSession($new_year,$new_chair);
-		}
-		break;
-	case 4: //delete class
-		if(isset($_SESSION['admin'])){
-			deleteClass($id);
-		}
-		break;
-	case 5: //add scout
-		//m.hancock - 11/10/2007 - Added tshirt field
-  
-		addScout($f_name,$l_name,$tshirt,$_SESSION['troop']);
-		break;
-	case 6: //delete scout
-		deleteScout($id);
-		break;
-	case 7: //remove scout from current roster
-		removeScout($id,$_SESSION['year']);
-		break;
-	case 8: ///reserved
-		break;
-
-	case 9:
-		updateRegisterScout($id,$_SESSION['year'],$c1,$c2,$c3);
-		break;
-	case 10:
-		registerScout($id,$_SESSION['year'],$c1,$c2,$c3);
-		break;
-	case 11:
-		editClass($name,$section,$capacity,$teach,$room,$period,$length,$id);
-		break;
-	case 12://reserved
-		break;
-	case 13://update registration info
-		update_contact($contact);
-		break;
-	case 14:
-		//m.hancock - 11/2/2005 - Open / Close Registration
-		toggleRegistration($status);
-	default:
-		break;
+if(isset($action)){
+	switch($action){
+		case 1://change troop
+			if(isset($_SESSION['admin'])){
+				$_SESSION['troop'] = $_POST['newtroop'];
+	
+			}
+			break;
+		case 2: //add class
+			if(isset($_SESSION['admin'])){
+				addClass($_POST['name'], $_POST['section'], $_POST['capacity'], $_POST['teach'], $_POST['room'], $_POST['period'], $_POST['length']);
+			}
+			break;
+		case 3: //add session
+			if(isset($_SESSION['admin'])){
+				addSession($_POST['new_year'], $_POST['new_chair']);
+			}
+			break;
+		case 4: //delete class
+			if(isset($_SESSION['admin'])){
+				deleteClass($_POST['id']);
+			}
+			break;
+		case 5: //add scout
+			//m.hancock - 11/10/2007 - Added tshirt field
+			addScout($_POST['f_name'], $_POST['l_name'], $_POST['tshirt'], $_SESSION['troop']);
+			break;
+		case 6: //delete scout
+			deleteScout($_POST['id']);
+			break;
+		case 7: //remove scout from current roster
+			removeScout($_POST['id'], $_SESSION['year']);
+			break;
+		case 8: ///reserved
+			break;
+		case 9:
+			updateRegisterScout($_POST['id'], $_SESSION['year'], $_POST['c1'], $_POST['c2'], $_POST['c3']);
+			break;
+		case 10:
+			registerScout($_POST['id'], $_SESSION['year'], $_POST['c1'], $_POST['c2'], $_POST['c3']);
+			break;
+		case 11:
+			editClass($_POST['name'], $_POST['section'], $_POST['capacity'], $_POST['teach'], $_POST['room'], $_POST['period'], $_POST['length'], $_POST['id']);
+			break;
+		case 12://reserved
+			break;
+		case 13://update registration info
+			update_contact();
+			break;
+		case 14:
+			//m.hancock - 11/2/2005 - Open / Close Registration
+			toggleRegistration($_POST['status']);
+		default:
+			break;
+	}
 }
 
 ?>
@@ -119,12 +128,18 @@ if(isset($_SESSION['admin']))
 
 <!--Case statement...chooses what menu stuff we want and were the data should go-->
 <?
-if(!isset($option))
-//if option is not set, send to stats page
-{
-	$option = 1;
+if(isset($_GET['option'])) {
+	$option = $_GET['option'];
 }
-
+else {
+	if(isset($_POST['option'])) {
+		$option = $_POST['option'];
+	}
+	else {
+		//if option is not set, send to stats page
+		$option = 1;
+	}
+}
 
 switch($option){
 	case 1:
@@ -141,16 +156,18 @@ switch($option){
 	case 3:
 		if(troopExists($_SESSION['troop'])){
 			drawRegisterScout();
-			if($action == '8'){
-				drawUpdateScoutReg($id,$_SESSION['year']);
+			if(isset($action)){
+				if($action == '8'){
+					drawUpdateScoutReg($_GET['id'],$_SESSION['year']);
+				}
 			}
 			drawListRegistered($_SESSION['year'],$_SESSION['troop']);
 		}
 		break;
 	case 4:
 		if(troopExists($_SESSION['troop'])){
-			getContactInfo($_SESSION['troop'],&$info);
-			 drawRegEditForm($info);
+			$info = getContactInfo($_SESSION['troop']);
+			 drawRegEditForm($info, $_SESSION['troop']);
 		}
 		break;
 	case 5:
@@ -167,8 +184,11 @@ switch($option){
 	case 7:
 		if(isset($_SESSION['admin'])){
 			drawAddClass();
-			if($action == '12')
-				drawEditClass($id);
+			if(isset($action)){
+				if($action == '12') {
+					drawEditClass($_GET['id']);
+				}
+			}
 			drawListClasses();
 		}
 		break;
